@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>蓝牙Breeze-_2_.ico</ApplicationIcon>
+
+    <!-- 真正的单文件 exe：砍掉多余卫星语言资源、去掉 ICU 全球化数据，
+         把 native 库塞进 exe（运行时自解压到临时目录）并压缩。
+         这些设置只在 dotnet publish 单文件发布时生效，不影响日常 Debug 构建。 -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <Target Name="GenerateBuildInfo" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <BuildInfoFile>$(IntermediateOutputPath)BuildInfo.g.cs</BuildInfoFile>
+      <_BuildTicks>$([System.DateTime]::UtcNow.Ticks)</_BuildTicks>
+    </PropertyGroup>
+    <ItemGroup>
+      <_BuildInfoLines Include="namespace BtFiller2 { internal static class BuildInfo { public const long BuildTicksUtc = $(_BuildTicks)L%3B } }" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteLinesToFile File="$(BuildInfoFile)" Lines="@(_BuildInfoLines)" Overwrite="true" />
+    <ItemGroup>
+      <Compile Include="$(BuildInfoFile)" />
+      <FileWrites Include="$(BuildInfoFile)" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <Content Include="蓝牙Breeze-_2_.ico" />
+  </ItemGroup>
+
+</Project>
